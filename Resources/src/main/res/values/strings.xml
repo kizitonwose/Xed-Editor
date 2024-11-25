@@ -135,8 +135,8 @@
     <string name="push">Push</string>
     <string name="pull">Pull</string>
     <string name="pull_desc">Sync local repository with remote repository</string>
-    <string name="commit_push">Commit and push</string>
-    <string name="push_desc">Create a commit and push changes to the remote repository"</string>
+    <string name="commit_push">Commit and/or push</string>
+    <string name="push_desc">Create a commit and/or push changes to the remote repository"</string>
     <string name="fill_both">Please fill in both fields</string>
     <string name="pushing">Pushing to remote repository…</string>
     <string name="nogit">Error: .git folder not found</string>
