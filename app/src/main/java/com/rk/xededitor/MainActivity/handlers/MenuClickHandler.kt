@@ -27,7 +27,6 @@ import com.rk.xededitor.R
 import com.rk.xededitor.rkUtils
 import com.rk.xededitor.rkUtils.getString
 import com.rk.xededitor.rkUtils.runCommandTermux
-import com.rk.xededitor.terminal.Terminal
 import com.rk.xededitor.ui.activities.settings.SettingsActivity
 import io.github.rosemoe.sora.widget.EditorSearcher
 import kotlinx.coroutines.Dispatchers
@@ -90,7 +89,15 @@ object MenuClickHandler {
             Id.terminal -> {
                 // Handle terminal
 //                activity.startActivity(Intent(activity, Terminal::class.java))
-                runCommandTermux(activity,"\$PREFIX/bin/zsh", arrayOf("-i"),false)
+                runCommandTermux(
+                    context = activity,
+                    exe = "\$PREFIX/bin/zsh",
+                    // Print workdir for context
+                    args = arrayOf("-c", "pwd && zsh"),
+                    background = false,
+                    // Makes sense to open the file directory.
+                    workDir = editorFragment?.file?.parentFile?.canonicalPath
+                )
                 return true
             }
             

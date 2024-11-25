@@ -15,22 +15,17 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.jaredrummler.ktsh.Shell
 import com.rk.libcommons.ActionPopup
 import com.rk.libcommons.LoadingPopup
 import com.rk.resources.*
 import com.rk.xededitor.MainActivity.MainActivity
 import com.rk.xededitor.MainActivity.file.filetree.events.FileTreeEvents
-import com.rk.xededitor.MainActivity.tabs.editor.EditorFragment
-import com.rk.xededitor.MainActivity.tabs.core.FragmentType
 import com.rk.xededitor.R
 import com.rk.xededitor.rkUtils
 import com.rk.xededitor.rkUtils.getString
 import com.rk.xededitor.rkUtils.runCommandTermux
-import com.rk.xededitor.terminal.Terminal
 import java.io.File
 import java.util.Locale
-import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -129,9 +124,10 @@ class FileAction(
                         runCommandTermux(
                             context = mainActivity,
                             exe = "\$PREFIX/bin/zsh",
-                            args = arrayOf("-i"),
+                            // Print workdir for context
+                            args = arrayOf("-c", "pwd && zsh"),
                             background = false,
-                            dir = file.canonicalPath
+                            workDir = file.canonicalPath
                         )
                     }
                     addItem(

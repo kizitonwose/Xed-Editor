@@ -45,14 +45,14 @@ object rkUtils {
         return orientation != Configuration.ORIENTATION_PORTRAIT
     }
 
-    fun runCommandTermux(context: Context, exe: String, args: Array<String>, background: Boolean = true, dir: String? = null) {
+    fun runCommandTermux(context: Context, exe: String, args: Array<String>, background: Boolean = true, workDir: String? = null) {
         val intent = Intent("com.termux.RUN_COMMAND").apply {
             setClassName("com.termux", "com.termux.app.RunCommandService")
             putExtra("com.termux.RUN_COMMAND_PATH", exe)
             putExtra("com.termux.RUN_COMMAND_ARGUMENTS", args)
             putExtra("com.termux.RUN_COMMAND_BACKGROUND", background)
-            dir?.let {
-                putExtra("com.termux.RUN_COMMAND_WORKDIR", dir)
+            workDir?.let {
+                putExtra("com.termux.RUN_COMMAND_WORKDIR", workDir)
             }
         }
         context.startForegroundService(intent)

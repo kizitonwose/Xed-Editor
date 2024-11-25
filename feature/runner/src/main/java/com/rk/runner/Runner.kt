@@ -1,6 +1,7 @@
 package com.rk.runner
 
 import android.content.Context
+import android.content.DialogInterface
 import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import androidx.annotation.Keep
@@ -8,10 +9,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rk.resources.strings
+import com.rk.runner.Runner.showRunnerSelectionDialog
 import com.rk.runner.runners.jvm.jdk.JavaRunner
 import com.rk.runner.runners.node.NodeRunner
 import com.rk.runner.runners.python.PythonRunner
 import com.rk.runner.runners.shell.ShellRunner
+import com.rk.runner.runners.shell.TermuxShellRunner
 import com.rk.runner.runners.web.html.HtmlRunner
 import com.rk.runner.runners.web.markdown.MarkDownRunner
 import java.io.File
@@ -50,9 +53,10 @@ object Runner {
             registry["mjs"] = it
             registry["js"] = it
         }
-        mutableListOf<RunnerImpl>(ShellRunner(true), ShellRunner(false)).let {
+        mutableListOf<RunnerImpl>(TermuxShellRunner()).let {
             registry["sh"] = it
             registry["bash"] = it
+            registry["kts"] = it
         }
     }
 
@@ -61,25 +65,22 @@ object Runner {
         return registry.keys.any { it == ext }
     }
 
-    @OptIn(DelicateCoroutinesApi::class)
     fun run(file: File, context: Context) {
-        GlobalScope.launch(Dispatchers.Default) {
             if (isRunnable(file)) {
                 val ext = file.name.substringAfterLast('.', "")
                 val runners = registry[ext]
                 if (runners?.size!! == 0) {
-                    return@launch
+                    return
                 }
-                if (runners.size == 1) {
-                    Thread { runners[0].run(file, context) }.start()
-                } else {
-                    withContext(Dispatchers.Main) {
-                        showRunnerSelectionDialog(context, runners) { selectedRunner ->
-                            Thread { selectedRunner.run(file, context) }.start()
+                showRunnerConfirmationDialog(context, file.name) {
+                    if (runners.size == 1) {
+                        Thread { runners[0].run(file, context) }.start()
+                    } else {
+                            showRunnerSelectionDialog(context, runners) { selectedRunner ->
+                                Thread { selectedRunner.run(file, context) }.start()
                         }
                     }
                 }
-            }
         }
     }
 
@@ -102,5 +103,20 @@ object Runner {
                 .show()
 
         recyclerView.adapter = RunnerAdapter(runners, dialog, onRunnerSelected)
+    }
+
+    private fun showRunnerConfirmationDialog(
+        context: Context,
+        fileName: String,
+        onConfirmed: () -> Unit,
+    ) {
+        MaterialAlertDialogBuilder(context)
+            .setTitle("Run the file: $fileName?")
+            .setNegativeButton(context.getString(strings.cancel), null)
+            .setPositiveButton(context.getString(strings.run)) { dialog, _ ->
+                dialog.dismiss()
+                onConfirmed()
+            }
+            .show()
     }
 }
