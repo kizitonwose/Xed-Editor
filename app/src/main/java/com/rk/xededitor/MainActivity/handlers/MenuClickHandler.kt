@@ -9,6 +9,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rk.libcommons.ActionPopup
 import com.rk.xededitor.DefaultScope
@@ -221,7 +223,7 @@ object MenuClickHandler {
                             if (gitRoot != null) {
                                 val git = Git.open(gitRoot)
                                 val view = LayoutInflater.from(activity).inflate(R.layout.popup_new, null)
-                                view.findViewById<LinearLayout>(Id.mimeTypeEditor).visibility = View.VISIBLE
+                                val editorLayout = view.findViewById<LinearLayout>(Id.mimeTypeEditor)
                                 val branchedit = view.findViewById<EditText>(Id.name).apply {
                                     hint = getString(strings.git_branch)
                                     setText(git.repository.branch)
@@ -230,11 +232,18 @@ object MenuClickHandler {
                                     hint = getString(strings.git_commit_msg)
                                     setText("")
                                 }
+
+                                activity.lifecycleScope.launch(Dispatchers.IO) {
+                                    val hasUncommittedChanges = !git.status().call().isClean
+                                    withContext(Dispatchers.Main) {
+                                        editorLayout.isVisible = hasUncommittedChanges
+                                    }
+                                }
                                 MaterialAlertDialogBuilder(activity).setTitle(getString(strings.push)).setView(view)
                                     .setNegativeButton(getString(strings.cancel), null).setPositiveButton(getString(strings.apply)) { _, _ ->
                                         val branch = branchedit.text.toString()
                                         val commit = commitedit.text.toString()
-                                        if (branch.isEmpty() || commit.isEmpty()) {
+                                        if (branch.isEmpty() || (editorLayout.isVisible && commit.isEmpty())) {
                                             rkUtils.toast(getString(strings.fill_both))
                                             return@setPositiveButton
                                         }
@@ -263,8 +272,8 @@ object MenuClickHandler {
                                                     userdata[1],
                                                 )
                                                 config.save()
-                                                // Check status before commit, do not write empty commits.
-                                                if (!git.status().call().isClean) {
+                                                // Only visible when status is not clean
+                                                if (editorLayout.isVisible) {
                                                     git.add().addFilepattern(".").call()
                                                     git.commit().setMessage(commit).call()
                                                 }
