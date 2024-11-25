@@ -9,27 +9,26 @@
         <option name="gradleJvm" value="#GRADLE_LOCAL_JAVA_HOME" />
         <option name="modules">
           <set>
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/Resources" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/app" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/app/externalEditor" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/core" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/core/commons" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/core/components" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/editor" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/editor/editor" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/editor/editor-lsp" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/editor/language-textmate" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/feature" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/feature/runner" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/feature/settings" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/feature/treeview" />
-            <option value="$USER_HOME$/Android/AndroidStudioProjects/Xed-Editor/wasm3" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/Resources" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/app/externalEditor" />
+            <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/core/commons" />
+            <option value="$PROJECT_DIR$/core/components" />
+            <option value="$PROJECT_DIR$/editor" />
+            <option value="$PROJECT_DIR$/editor/editor" />
+            <option value="$PROJECT_DIR$/editor/editor-lsp" />
+            <option value="$PROJECT_DIR$/editor/language-textmate" />
+            <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/runner" />
+            <option value="$PROJECT_DIR$/feature/settings" />
+            <option value="$PROJECT_DIR$/feature/treeview" />
+            <option value="$PROJECT_DIR$/wasm3" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
-    <option name="offlineMode" value="true" />
   </component>
 </project>

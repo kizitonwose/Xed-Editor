@@ -26,6 +26,7 @@ import com.rk.xededitor.MainActivity.tabs.core.FragmentType
 import com.rk.xededitor.R
 import com.rk.xededitor.rkUtils
 import com.rk.xededitor.rkUtils.getString
+import com.rk.xededitor.rkUtils.runCommandTermux
 import com.rk.xededitor.terminal.Terminal
 import java.io.File
 import java.util.Locale
@@ -122,9 +123,16 @@ class FileAction(
                         getString(strings.open_dir_in_terminal),
                         getDrawable(drawable.terminal),
                     ) {
-                        val intent = Intent(context, Terminal::class.java)
-                        intent.putExtra("cwd", file.absolutePath)
-                        context.startActivity(intent)
+//                        val intent = Intent(context, Terminal::class.java)
+//                        intent.putExtra("cwd", file.absolutePath)
+//                        context.startActivity(intent)
+                        runCommandTermux(
+                            context = mainActivity,
+                            exe = "\$PREFIX/bin/zsh",
+                            args = arrayOf("-i"),
+                            background = false,
+                            dir = file.canonicalPath
+                        )
                     }
                     addItem(
                         getString(strings.add_file),

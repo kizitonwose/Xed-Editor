@@ -102,6 +102,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
         getByName("debug") {
+            applicationIdSuffix = ".debug"
             buildConfigField("String", "GIT_COMMIT_HASH", "\"${getFullGitCommitHash()}\"")
             buildConfigField("String", "GIT_SHORT_COMMIT_HASH", "\"${getGitCommitHash()}\"")
             buildConfigField("String", "GIT_COMMIT_DATE", "\"${getGitCommitDate()}\"")
