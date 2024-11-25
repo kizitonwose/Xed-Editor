@@ -255,8 +255,11 @@ object MenuClickHandler {
                                                     userdata[1],
                                                 )
                                                 config.save()
-                                                git.add().addFilepattern(".").call()
-                                                git.commit().setMessage(commit).call()
+                                                // Check status before commit, do not write empty commits.
+                                                if (!git.status().call().isClean) {
+                                                    git.add().addFilepattern(".").call()
+                                                    git.commit().setMessage(commit).call()
+                                                }
                                                 git.push().setCredentialsProvider(
                                                     UsernamePasswordCredentialsProvider(
                                                         credentials[0],
