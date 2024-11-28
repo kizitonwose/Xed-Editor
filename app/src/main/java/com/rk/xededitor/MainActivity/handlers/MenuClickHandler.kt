@@ -94,8 +94,7 @@ object MenuClickHandler {
                 runCommandTermux(
                     context = activity,
                     exe = "\$PREFIX/bin/zsh",
-                    // Print workdir for context
-                    args = arrayOf("-c", "pwd && zsh"),
+                    args = arrayOf("-i"),
                     background = false,
                     // Makes sense to open the file directory.
                     workDir = editorFragment?.file?.parentFile?.canonicalPath

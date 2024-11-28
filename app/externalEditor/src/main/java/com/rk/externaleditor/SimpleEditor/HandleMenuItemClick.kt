@@ -11,6 +11,7 @@ import com.rk.libcommons.PathUtils.toPath
 import com.rk.libcommons.Printer
 import com.rk.libcommons.rkUtils2
 import com.rk.runner.Runner
+import com.rk.runner.commonUtils.runCommandTermux
 import io.github.rosemoe.sora.widget.EditorSearcher.SearchOptions
 import java.io.File
 
@@ -100,10 +101,18 @@ object HandleMenuItemClick {
                     redo!!.setEnabled(editor!!.canRedo())
                     undo!!.setEnabled(editor!!.canUndo())
                 }
-                
-                
+
+                // For the external file editor
                 R.id.terminal -> {
-                    startActivity(Intent(this, Class.forName("com.rk.xededitor.terminal.Terminal")))
+                    // startActivity(Intent(this, Class.forName("com.rk.xededitor.terminal.Terminal")))
+                    runCommandTermux(
+                        context = editorActivity,
+                        exe = "\$PREFIX/bin/zsh",
+                        args = arrayOf("-i"),
+                        background = false,
+                        // Makes sense to open the file directory.
+                        workDir = editorActivity.intent.data?.toPath()?.let(::File)?.parentFile?.canonicalPath
+                    )
                 }
                 
                 R.id.action_print -> {

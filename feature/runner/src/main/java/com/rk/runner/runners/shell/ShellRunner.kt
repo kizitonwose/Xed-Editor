@@ -3,7 +3,6 @@ package com.rk.runner.runners.shell
 import android.content.Context
 import android.graphics.drawable.Drawable
 import androidx.core.content.ContextCompat
-import com.rk.libcommons.R
 import com.rk.runner.RunnerImpl
 import com.rk.runner.commonUtils.runCommand
 import java.io.File
@@ -12,23 +11,15 @@ import com.rk.runner.commonUtils.runCommandTermux
 
 class TermuxShellRunner: RunnerImpl {
     override fun run(file: File, context: Context) {
-        if (file.name.endsWith("kts")){
-            runCommandTermux(
-                context = context,
-                exe = "\$PREFIX/bin/zsh",
-                args = arrayOf("-c", "echo Running: ${file.name} && kotlin ${file.name} && zsh"),
-                background = false,
-                dir = file.parentFile?.canonicalPath
-            )
-        } else {
-            runCommandTermux(
-                context = context,
-                exe = "\$PREFIX/bin/bash",
-                args = arrayOf("-c", "echo Running: ${file.name} && bash ${file.name} && bash"),
-                background = false,
-                dir = file.parentFile?.canonicalPath
-            )
-        }
+        // User a runner instead of /.filename to support the external storage as we cannot directly exec files there.
+        val runner = if (file.name.endsWith("kts")) "kotlin" else "zsh"
+        runCommandTermux(
+            context = context,
+            exe = "\$PREFIX/bin/zsh",
+            args = arrayOf("-c", "echo Running: ${file.name} && $runner ${file.name} && zsh"),
+            background = false,
+            workDir = file.parentFile?.canonicalPath
+        )
     }
 
     override fun getName(): String = "Termux"

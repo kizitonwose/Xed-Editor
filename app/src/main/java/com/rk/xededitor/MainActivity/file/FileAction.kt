@@ -124,8 +124,7 @@ class FileAction(
                         runCommandTermux(
                             context = mainActivity,
                             exe = "\$PREFIX/bin/zsh",
-                            // Print workdir for context
-                            args = arrayOf("-c", "pwd && zsh"),
+                            args = arrayOf("-i"),
                             background = false,
                             workDir = file.canonicalPath
                         )
