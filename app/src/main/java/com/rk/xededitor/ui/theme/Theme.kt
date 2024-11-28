@@ -1,6 +1,8 @@
 package com.rk.xededitor.ui.theme
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.material3.MaterialTheme
@@ -123,7 +125,7 @@ fun KarbonTheme(
     val view = LocalView.current
     if (!view.isInEditMode) {
         SideEffect {
-            (view.context as Activity).apply {
+            (view.context.activity()!!).apply {
                 WindowCompat.getInsetsController(window, window.decorView).apply {
                     isAppearanceLightStatusBars = !darkTheme
                     isAppearanceLightNavigationBars = !darkTheme
@@ -137,3 +139,7 @@ fun KarbonTheme(
 
 @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.S)
 fun supportsDynamicTheming() = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+tailrec fun Context.activity(): Activity? = when {
+    this is Activity -> this
+    else -> (this as? ContextWrapper)?.baseContext?.activity()
+}

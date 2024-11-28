@@ -22,7 +22,7 @@ object FileTreeScrollViewManager {
     fun getFileTreeParentScrollView(context: Context, fileTree: FileTree?): ViewGroup {
         fileTree?.let { fileTreeViewId = it.id }
         val density = context.resources.displayMetrics.density
-        val isDiagonalScroll = PreferencesData.getBoolean(PreferencesKeys.DIAGONAL_SCROLL, true)
+        val isDiagonalScroll = PreferencesData.getBoolean(PreferencesKeys.DIAGONAL_SCROLL, false)
         val linearLayout = LinearLayout(context)
 
         val params =

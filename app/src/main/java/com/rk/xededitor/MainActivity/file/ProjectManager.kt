@@ -3,6 +3,7 @@ package com.rk.xededitor.MainActivity.file
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.HorizontalScrollView
 import androidx.lifecycle.lifecycleScope
 import com.google.gson.Gson
 import com.rk.filetree.interfaces.FileClickListener
@@ -61,6 +62,8 @@ object ProjectManager {
             queue.add(file)
             return
         }
+
+        GitView.setup(activity.binding!!.gitView)
         val rail = activity.binding!!.navigationRail
         for (i in 0 until rail.menu.size()) {
             val item = rail.menu.getItem(i)
@@ -112,7 +115,7 @@ object ProjectManager {
 
                 for (i in 0 until activity.binding!!.maindrawer.childCount) {
                     val view = activity.binding!!.maindrawer.getChildAt(i)
-                    if (view is DiagonalScrollView) {
+                    if (view is DiagonalScrollView || view is HorizontalScrollView) {
                         if (view.id == file.absolutePath.hashCode()) {
                             activity.binding!!.maindrawer.removeView(view)
                         }
@@ -157,6 +160,12 @@ object ProjectManager {
                 break
             }
         }
+
+        // Changing is handled in the loop above if there
+        // is still an available project after removal.
+        if (projects.isEmpty()) {
+            GitView.clear()
+        }
         // }
     }
 
@@ -174,16 +183,18 @@ object ProjectManager {
                 }
             }
         }
+        GitView.updateRoot(file, activity)
     }
 
     fun clear(activity: MainActivity) {
         projects.clear()
         for (i in 0 until activity.binding!!.maindrawer.childCount) {
             val view = activity.binding!!.maindrawer.getChildAt(i)
-            if (view is DiagonalScrollView) {
+            if (view is DiagonalScrollView || view is HorizontalScrollView) {
                 activity.binding!!.maindrawer.removeView(view)
             }
         }
+        GitView.clear()
     }
 
     fun getSelectedProjectRootFilePath(activity: MainActivity): String? {
@@ -235,7 +246,7 @@ object ProjectManager {
             }
         }
     }
-    
+
     private fun saveProjects(activity: MainActivity) {
         activity.lifecycleScope.launch(Dispatchers.IO) {
             val gson = Gson()
