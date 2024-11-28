@@ -7,6 +7,31 @@ import com.rk.libcommons.R
 import com.rk.runner.RunnerImpl
 import com.rk.runner.commonUtils.runCommand
 import java.io.File
+import com.rk.runner.commonUtils.runCommandTermux
+
+class TermuxShellRunner: RunnerImpl {
+    override fun run(file: File, context: Context) {
+        // User a runner instead of /.filename to support the external storage as we cannot directly exec files there.
+        val runner = if (file.name.endsWith("kts")) "kotlin" else "zsh"
+        runCommandTermux(
+            context = context,
+            exe = "\$PREFIX/bin/zsh",
+            args = arrayOf("-c", "echo Running: ${file.name} && $runner ${file.name} && zsh"),
+            background = false,
+            workDir = file.parentFile?.canonicalPath
+        )
+    }
+
+    override fun getName(): String = "Termux"
+
+    override fun getDescription(): String = "Run in Termux"
+
+    override fun getIcon(context: Context): Drawable? =  ContextCompat.getDrawable(context, R.drawable.terminal)
+
+    override fun isRunning(): Boolean = false
+
+    override fun stop() = TODO("Not yet implemented")
+}
 
 class ShellRunner(private val failsafe: Boolean) : RunnerImpl {
     override fun run(file: File, context: Context) {

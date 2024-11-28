@@ -9,6 +9,8 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.rk.libcommons.ActionPopup
 import com.rk.libcommons.DefaultScope
@@ -26,7 +28,6 @@ import com.rk.xededitor.R
 import com.rk.xededitor.rkUtils
 import com.rk.xededitor.rkUtils.getString
 import com.rk.xededitor.rkUtils.runCommandTermux
-import com.rk.xededitor.terminal.Terminal
 import com.rk.xededitor.ui.activities.settings.SettingsActivity
 import io.github.rosemoe.sora.widget.EditorSearcher
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -90,8 +91,15 @@ object MenuClickHandler {
             
             Id.terminal -> {
                 // Handle terminal
-                activity.startActivity(Intent(activity, Terminal::class.java))
-                //runCommandTermux(activity,"/data/data/com.termux/files/usr/bin/bash", arrayOf("-i"),false)
+//                activity.startActivity(Intent(activity, Terminal::class.java))
+                runCommandTermux(
+                    context = activity,
+                    exe = "\$PREFIX/bin/zsh",
+                    args = arrayOf("-i"),
+                    background = false,
+                    // Makes sense to open the file directory.
+                    workDir = editorFragment?.file?.parentFile?.canonicalPath
+                )
                 return true
             }
             
@@ -215,7 +223,7 @@ object MenuClickHandler {
                             if (gitRoot != null) {
                                 val git = Git.open(gitRoot)
                                 val view = LayoutInflater.from(activity).inflate(R.layout.popup_new, null)
-                                view.findViewById<LinearLayout>(Id.mimeTypeEditor).visibility = View.VISIBLE
+                                val editorLayout = view.findViewById<LinearLayout>(Id.mimeTypeEditor)
                                 val branchedit = view.findViewById<EditText>(Id.name).apply {
                                     hint = getString(R.string.git_branch)
                                     setText(git.repository.branch)
@@ -224,11 +232,18 @@ object MenuClickHandler {
                                     hint = getString(R.string.git_commit_msg)
                                     setText("")
                                 }
+
+                                activity.lifecycleScope.launch(Dispatchers.IO) {
+                                    val hasUncommittedChanges = !git.status().call().isClean
+                                    withContext(Dispatchers.Main) {
+                                        editorLayout.isVisible = hasUncommittedChanges
+                                    }
+                                }
                                 MaterialAlertDialogBuilder(activity).setTitle(getString(R.string.push)).setView(view)
                                     .setNegativeButton(getString(R.string.cancel), null).setPositiveButton(getString(R.string.apply)) { _, _ ->
                                         val branch = branchedit.text.toString()
                                         val commit = commitedit.text.toString()
-                                        if (branch.isEmpty() || commit.isEmpty()) {
+                                        if (branch.isEmpty() || (editorLayout.isVisible && commit.isEmpty())) {
                                             rkUtils.toast(getString(R.string.fill_both))
                                             return@setPositiveButton
                                         }
@@ -257,8 +272,11 @@ object MenuClickHandler {
                                                     userdata[1],
                                                 )
                                                 config.save()
-                                                git.add().addFilepattern(".").call()
-                                                git.commit().setMessage(commit).call()
+                                                // Only visible when status is not clean
+                                                if (editorLayout.isVisible) {
+                                                    git.add().addFilepattern(".").call()
+                                                    git.commit().setMessage(commit).call()
+                                                }
                                                 git.push().setCredentialsProvider(
                                                     UsernamePasswordCredentialsProvider(
                                                         credentials[0],

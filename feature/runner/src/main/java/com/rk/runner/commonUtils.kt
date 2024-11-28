@@ -2,7 +2,6 @@ package com.rk.runner
 
 import android.content.Context
 import android.content.Intent
-import com.rk.libcommons.rkUtils2
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -66,6 +65,19 @@ object commonUtils {
                 it.putExtra("alpine", alpine)
             }
         )
+    }
+
+    fun runCommandTermux(context: Context, exe: String, args: Array<String>, background: Boolean = true, workDir: String? = null) {
+        val intent = Intent("com.termux.RUN_COMMAND").apply {
+            setClassName("com.termux", "com.termux.app.RunCommandService")
+            putExtra("com.termux.RUN_COMMAND_PATH", exe)
+            putExtra("com.termux.RUN_COMMAND_ARGUMENTS", args)
+            putExtra("com.termux.RUN_COMMAND_BACKGROUND", background)
+            workDir?.let {
+                putExtra("com.termux.RUN_COMMAND_WORKDIR", workDir)
+            }
+        }
+        context.startForegroundService(intent)
     }
 
     fun exctractAssets(context: Context, assetFileName: String, outputFilePath: String) {

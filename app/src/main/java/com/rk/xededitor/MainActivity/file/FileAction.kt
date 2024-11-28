@@ -25,13 +25,13 @@ import com.rk.xededitor.MainActivity.tabs.core.FragmentType
 import com.rk.xededitor.R
 import com.rk.xededitor.rkUtils
 import com.rk.xededitor.rkUtils.getString
-import com.rk.xededitor.terminal.Terminal
+import com.rk.xededitor.rkUtils.runCommandTermux
 import java.io.File
 import java.util.Locale
-import kotlin.random.Random
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlin.random.Random
 
 const val REQUEST_ADD_FILE = 38758
 const val REQUEST_CODE_OPEN_DIRECTORY = 8359487
@@ -117,9 +117,16 @@ class FileAction(
                         getString(R.string.open_dir_in_terminal),
                         getDrawable(drawables.terminal),
                     ) {
-                        val intent = Intent(context, Terminal::class.java)
-                        intent.putExtra("cwd", file.absolutePath)
-                        context.startActivity(intent)
+//                        val intent = Intent(context, Terminal::class.java)
+//                        intent.putExtra("cwd", file.absolutePath)
+//                        context.startActivity(intent)
+                        runCommandTermux(
+                            context = mainActivity,
+                            exe = "\$PREFIX/bin/zsh",
+                            args = arrayOf("-i"),
+                            background = false,
+                            workDir = file.canonicalPath
+                        )
                     }
                     addItem(
                         getString(R.string.add_file),
